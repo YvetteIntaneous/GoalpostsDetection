@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DeckLinkAPI_i.c" />
+    <ClCompile Include="GenerateGLGoalposts.cpp" />
+    <ClCompile Include="glad.c" />
+    <ClCompile Include="IdentifyGoalposts.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="com_ptr.h" />
+    <ClInclude Include="com_utils.h" />
+    <ClInclude Include="csv.h" />
+    <ClInclude Include="DeckLinkAPI_h.h" />
+    <ClInclude Include="DeviceManager.h" />
+    <ClInclude Include="dirent.h" />
+    <ClInclude Include="IdentifyGoalposts.h" />
+    <ClInclude Include="LiveVideoWithOpenCV.h" />
+    <ClInclude Include="opengl\animation.h" />
+    <ClInclude Include="opengl\animator.h" />
+    <ClInclude Include="opengl\animdata.h" />
+    <ClInclude Include="opengl\assimp_glm_helpers.h" />
+    <ClInclude Include="opengl\bone.h" />
+    <ClInclude Include="opengl\camera.h" />
+    <ClInclude Include="opengl\entity.h" />
+    <ClInclude Include="opengl\mesh.h" />
+    <ClInclude Include="opengl\model.h" />
+    <ClInclude Include="opengl\model_animation.h" />
+    <ClInclude Include="opengl\shader.h" />
+    <ClInclude Include="opengl\shader_c.h" />
+    <ClInclude Include="opengl\shader_m.h" />
+    <ClInclude Include="opengl\shader_s.h" />
+    <ClInclude Include="opengl\shader_t.h" />
+    <ClInclude Include="opengl\stb_image.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{31005925-cab9-4f48-aed8-7b6de7a9a03f}</ProjectGuid>
+    <RootNamespace>OpenCVTesting</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\opencv\build\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\opencv\build\x64\vc16\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\opencv\install\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\opencv\install\x64\vc16\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Program Files\Assimp\include;D:\Libraries\include;$(IncludePath);C:\opencv\install\include</IncludePath>
+    <LibraryPath>D:\Libraries\lib;$(LibraryPath);C:\Program Files\Assimp\lib;C:\opencv\install\x64\vc16\lib</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opencv_world480d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$C:\opencv\install\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opencv_aruco480.lib;opencv_bgsegm480.lib;opencv_bioinspired480.lib;opencv_calib3d480.lib;opencv_ccalib480.lib;opencv_core480.lib;opencv_datasets480.lib;opencv_dnn_objdetect480.lib;opencv_dnn_superres480.lib;opencv_dnn480.lib;opencv_dpm480.lib;opencv_face480.lib;opencv_features2d480.lib;opencv_flann480.lib;opencv_fuzzy480.lib;opencv_gapi480.lib;opencv_hfs480.lib;opencv_highgui480.lib;opencv_img_hash480.lib;opencv_imgcodecs480.lib;opencv_imgproc480.lib;opencv_intensity_transform480.lib;opencv_line_descriptor480.lib;opencv_mcc480.lib;opencv_ml480.lib;opencv_objdetect480.lib;opencv_optflow480.lib;opencv_phase_unwrapping480.lib;opencv_photo480.lib;opencv_plot480.lib;opencv_quality480.lib;opencv_rapid480.lib;opencv_reg480.lib;opencv_rgbd480.lib;opencv_saliency480.lib;opencv_shape480.lib;opencv_stereo480.lib;opencv_stitching480.lib;opencv_structured_light480.lib;opencv_superres480.lib;opencv_surface_matching480.lib;opencv_text480.lib;opencv_tracking480.lib;opencv_video480.lib;opencv_videoio480.lib;opencv_videostab480.lib;opencv_wechat_qrcode480.lib;opencv_xfeatures2d480.lib;opencv_ximgproc480.lib;opencv_xobjdetect480.lib;opencv_xphoto480.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\opencv\install\x64\vc16\lib</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\opencv\install\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\opencv\install\x64\vc16\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_aruco480.lib;opencv_bgsegm480.lib;opencv_bioinspired480.lib;opencv_calib3d480.lib;opencv_ccalib480.lib;opencv_core480.lib;opencv_datasets480.lib;opencv_dnn_objdetect480.lib;opencv_dnn_superres480.lib;opencv_dnn480.lib;opencv_dpm480.lib;opencv_face480.lib;opencv_features2d480.lib;opencv_flann480.lib;opencv_fuzzy480.lib;opencv_gapi480.lib;opencv_hfs480.lib;opencv_highgui480.lib;opencv_img_hash480.lib;opencv_imgcodecs480.lib;opencv_imgproc480.lib;opencv_intensity_transform480.lib;opencv_line_descriptor480.lib;opencv_mcc480.lib;opencv_ml480.lib;opencv_objdetect480.lib;opencv_optflow480.lib;opencv_phase_unwrapping480.lib;opencv_photo480.lib;opencv_plot480.lib;opencv_quality480.lib;opencv_rapid480.lib;opencv_reg480.lib;opencv_rgbd480.lib;opencv_saliency480.lib;opencv_shape480.lib;opencv_stereo480.lib;opencv_stitching480.lib;opencv_structured_light480.lib;opencv_superres480.lib;opencv_surface_matching480.lib;opencv_text480.lib;opencv_tracking480.lib;opencv_video480.lib;opencv_videoio480.lib;opencv_videostab480.lib;opencv_wechat_qrcode480.lib;opencv_xfeatures2d480.lib;opencv_ximgproc480.lib;opencv_xobjdetect480.lib;opencv_xphoto480.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\nupengl.core.redist.0.1.0.1\build\native\nupengl.core.redist.targets" Condition="Exists('..\packages\nupengl.core.redist.0.1.0.1\build\native\nupengl.core.redist.targets')" />
+    <Import Project="..\packages\nupengl.core.0.1.0.1\build\native\nupengl.core.targets" Condition="Exists('..\packages\nupengl.core.0.1.0.1\build\native\nupengl.core.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\nupengl.core.redist.0.1.0.1\build\native\nupengl.core.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\nupengl.core.redist.0.1.0.1\build\native\nupengl.core.redist.targets'))" />
+    <Error Condition="!Exists('..\packages\nupengl.core.0.1.0.1\build\native\nupengl.core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\nupengl.core.0.1.0.1\build\native\nupengl.core.targets'))" />
+  </Target>
+</Project>
