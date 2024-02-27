@@ -1,12 +1,18 @@
 #pragma once
 
 //Using C++ version 98
-//Model importing
+
+///
+///Model importing
+///
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+///
 
-//OpenGL libraries
+///
+///OpenGL libraries
+///
 #include <glad/glad.h> 
 #include <GLFW/glfw3.h>
 #include <KHR/khrplatform.h> 
@@ -14,20 +20,25 @@
 #include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/type_ptr.hpp>
+///
 
-
-//More opengl
+///
+///More opengl
+/// 
 #include "opengl/mesh.h"
+///
+
 
 //#include "linmath.h"
-
 #include <stdlib.h>
 #include <stdio.h>
 
 
 #define _USE_MATH_DEFINES
 
-//OpenCV library requirements
+///
+///OpenCV library requirements
+///
 #include <cstring>
 #include <iostream>
 #include <string>
@@ -45,6 +56,18 @@
 
 #include "dirent.h"
 #include "csv.h"
+///
+
+///
+///Blackmagic
+///
+#include "LiveVideoWithOpenCV.h"
+#include "com_utils.h"
+
+#ifdef _WIN32
+#include "DeckLinkAPI_i.c"
+#endif
+///
 
 //using std::filesystem::directory_iterator;
 
@@ -203,3 +226,4 @@ float GetCameraXPosition();
 float GetCameraYPosition();
 float GetCameraZPosition();
 
+//HRESULT Capture::VideoInputFrameArrived(IDeckLinkVideoInputFrame* videoFrame, IDeckLinkAudioInputPacket* /* unused */);

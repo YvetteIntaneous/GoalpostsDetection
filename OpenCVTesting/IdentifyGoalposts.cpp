@@ -26,6 +26,37 @@ int testingMode = 2;
 int dilateGL = 10;
 
 
+namespace
+{
+    bool verbose = true;
+
+    void growRect(cv::Rect& rect, double xFactor, double yFactor)
+    {
+        cv::Size  deltaSize((int)(rect.width * xFactor), (int)(rect.height * yFactor));
+        cv::Point offset(deltaSize.width / 2, deltaSize.height / 2);
+        rect += deltaSize;
+        rect -= offset;
+    }
+
+    void fillWithBlackVideo(const com_ptr<IDeckLinkMutableVideoFrame>& theFrame)
+    {
+        void* bytes;
+        theFrame->GetBytes(&bytes);
+        auto numWords = theFrame->GetRowBytes() * theFrame->GetHeight() / sizeof(uint32_t);
+
+        // Treat as pointer to uint32_t so we can fill with a UYVY pattern for black
+        auto		   words = reinterpret_cast<uint32_t*>(bytes);
+        const uint32_t kUYVYBlack = 0x10801080;
+
+        std::fill(words, words + numWords, kUYVYBlack);
+    }
+
+    int roundToMultipleOf(int number, int multiple)
+    {
+        return ((number + (multiple / 2)) / multiple) * multiple;
+    }
+}
+
 /*
 void ComparePoints(vector<vector<int>> points1, vector<vector<int>> points2)
 {
@@ -918,7 +949,6 @@ void ProcessGLFrame(Mat m, int counter)
 }
 
 
-
 float GetCameraPitch()
 {
     float pitch = 0;
@@ -1054,3 +1084,187 @@ float GetCameraZPosition()
     return z;
 }
 
+/*
+void Capture::StartDeckLinkCapture()
+{
+    if (verbose)
+        std::cout << "StartDeckLinkCapture" << std::endl;
+
+    std::lock_guard<std::mutex> lock(m_deckLinkInputMutex);
+
+    const BMDPixelFormat pixelFormat = bmdFormat8BitYUV;
+
+    unsigned	 width, height;
+    BMDTimeValue frameDuration;
+
+    getWidthHeightForDisplayMode(m_displayMode, width, height, frameDuration, m_timeScale);
+
+    if (FAILED(m_deckLinkInput->EnableVideoInput(m_displayMode, pixelFormat, bmdVideoInputEnableFormatDetection)))
+        throw std::runtime_error("Could not enable video input");
+
+    if (FAILED(m_deckLinkOutput->EnableVideoOutput(m_displayMode, bmdVideoOutputFlagDefault)))
+        throw std::runtime_error("Could not enable video output");
+
+    for (int i = 0; i < 10; i++)
+    {
+        IDeckLinkMutableVideoFrame* outputFrame;
+        CHECK_API(m_deckLinkOutput->CreateVideoFrame(width, height, width * 2, bmdFormat8BitYUV, bmdFrameFlagDefault, &outputFrame));
+
+        m_outputVideoFrameQueue.push_back(outputFrame);
+    }
+    m_outputVideoFrameIndex = 0;
+
+    // Create a black frame
+
+    CHECK_API(m_deckLinkOutput->CreateVideoFrame(width, height, width * 2, bmdFormat8BitYUV, bmdFrameFlagDefault, m_blackVideoFrame.releaseAndGetAddressOf()));
+    fillWithBlackVideo(m_blackVideoFrame);
+
+    if (FAILED(m_deckLinkOutput->StartScheduledPlayback(0, m_timeScale, 1.0)))
+        throw std::runtime_error("Could not start video output");
+
+    if (FAILED(m_deckLinkInput->SetCallback(this)))
+        throw std::runtime_error("Could not set callback on input");
+    if (FAILED(m_deckLinkInput->StartStreams()))
+        throw std::runtime_error("Could not StartStreams");
+}
+*/
+
+/*
+//  Use this 2
+HRESULT Capture::VideoInputFrameArrived(IDeckLinkVideoInputFrame* videoFrame, IDeckLinkAudioInputPacket*)
+{
+    // Ignore empty video frames
+    if (videoFrame == nullptr)
+        return S_OK;
+
+    BMDFrameFlags flags = videoFrame->GetFlags();
+
+    // Detect dropped frames by comparing the stream time of this frame with the previously captured frame.
+    // If we're too slow processing a frame DeckLink we will eventually drop frames and there
+    // will be a difference greater than one frame difference between frame arrivals.
+    BMDTimeValue capturedFrameNumber;
+    BMDTimeValue frameDuration;
+    CHECK_API(videoFrame->GetStreamTime(&capturedFrameNumber, &frameDuration, m_timeScale));
+
+    // For black input frames, or for 'pass-through' mode, just schedule input frame as output frame
+    if (flags & bmdFrameHasNoInputSource || m_processMode == kProcessModeLoopThrough)
+    {
+        m_deckLinkOutput->ScheduleVideoFrame(videoFrame, capturedFrameNumber, frameDuration, m_timeScale);
+    }
+    else
+    {
+        void* data;
+        videoFrame->GetBytes(&data);
+
+        const auto width = (int32_t)videoFrame->GetWidth();
+        const auto height = (int32_t)videoFrame->GetHeight();
+        const auto numBytes = videoFrame->GetRowBytes() * height;
+
+        auto startTime = std::chrono::high_resolution_clock::now();
+
+        cv::Mat  frameCPU(height, width, CV_8UC2, data);
+        cv::UMat image(height, width, CV_8UC1);
+
+        if (m_processMode != kProcessModeBlack)
+            cvtColor(frameCPU, image, cv::COLOR_YUV2GRAY_UYVY);
+
+        // Copy the input frame - we will compose using it
+        IDeckLinkMutableVideoFrame* outputFrame = m_outputVideoFrameQueue[m_outputVideoFrameIndex];
+
+        // Use the DeckLinkAPI video frame conversion interface to ensure the output frame is in the expected 8-bit YUV format
+        m_deckLinkVideoConversion->ConvertFrame(videoFrame, outputFrame);
+
+        void* outData = nullptr;
+        CHECK_API(outputFrame->GetBytes(&outData));
+        memcpy(outData, data, (size_t)numBytes);
+
+        cv::Mat outputUYVY(height, width, CV_8UC2, outData);
+
+        const double scaleFactor = 1.0 / 8.0;
+        if (m_processMode == kProcessModeBlack)
+        {
+            // Nothing to process for black frame
+        }
+        else if (m_processMode == kProcessModeGrayScale)
+        {
+            cv::UMat			  UV(height, width, CV_8UC1, cv::Scalar(128));
+            std::vector<cv::UMat> channels{ UV, image };
+            merge(channels, outputUYVY);
+        }
+        else if (m_processMode == kProcessModeResizeFiltered)
+        {
+            cv::resize(image, image, cv::Size(), scaleFactor, scaleFactor, cv::INTER_AREA);
+            cv::resize(image, image, cv::Size(), 1.0 / scaleFactor, 1.0 / scaleFactor, cv::INTER_LINEAR);
+
+            cv::UMat			  UV(height, width, CV_8UC1, cv::Scalar(128));
+            std::vector<cv::UMat> channels{ UV, image };
+            merge(channels, outputUYVY);
+        }
+        else if (m_processMode == kProcessModeResizeNearest)
+        {
+            cv::resize(image, image, cv::Size(), scaleFactor, scaleFactor, cv::INTER_NEAREST);
+            cv::resize(image, image, cv::Size(), 1.0 / scaleFactor, 1.0 / scaleFactor, cv::INTER_NEAREST);
+
+            cv::UMat			  UV(height, width, CV_8UC1, cv::Scalar(128));
+            std::vector<cv::UMat> channels{ UV, image };
+            merge(channels, outputUYVY);
+        }
+        else if (m_processMode == kProcessModeResizeTooSmall)
+        {
+            const double scaleDownFactor = 1.0 / 24.0;
+
+            cv::resize(image, image, cv::Size(), scaleDownFactor, scaleDownFactor, cv::INTER_NEAREST);
+            blur(image, image, cv::Size(5, 5));
+            cv::resize(image, image, cv::Size(), 1.0 / scaleDownFactor, 1.0 / scaleDownFactor, cv::INTER_NEAREST);
+
+            cv::UMat			  UV(height, width, CV_8UC1, cv::Scalar(128));
+            std::vector<cv::UMat> channels{ UV, image };
+            merge(channels, outputUYVY);
+        }
+        else if (m_processMode == kProcessModeDetectWithAnnotation)
+        {
+            // Downscale using suitable filter
+            const double				 scaleDownFactor = m_processFlag[kProcessFlagResizeScale] ? 1.0 / 16.0 : 1.0 / 8.0;
+            const cv::InterpolationFlags filter = m_processFlag[kProcessFlagFilterQuality] ? cv::INTER_NEAREST : cv::INTER_AREA;
+            cv::resize(image, image, cv::Size(), scaleDownFactor, scaleDownFactor, filter);
+
+            std::vector<cv::Rect> faces;
+            std::vector<int>	  numDetections;
+
+            // Draw the elapsed processing time in the bottom right corner
+            auto microsec = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - startTime).count() / 1000000.0;
+            putText(outputUYVY, std::to_string(microsec) + "ms", cv::Point(width - 800, height - 100), cv::FONT_HERSHEY_SIMPLEX, 7., cv::Scalar(128, 255), 2);
+        }
+        else
+        {
+            // Downscale using suitable filter
+            cv::resize(image, image, cv::Size(), scaleFactor, scaleFactor, cv::INTER_AREA);
+
+            std::vector<cv::Rect> faces;
+            std::vector<int>	  numDetections;
+
+            // Draw the elapsed processing time in the bottom right corner
+            auto microsec = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - startTime).count() / 1000000.0;
+            putText(outputUYVY, std::to_string(microsec) + "ms", cv::Point(width - 800, height - 100), cv::FONT_HERSHEY_SIMPLEX, 7., cv::Scalar(128, 255), 2);
+        }
+
+        if (m_processMode == kProcessModeBlack)
+        {
+            auto hr = m_deckLinkOutput->ScheduleVideoFrame(m_blackVideoFrame.get(), capturedFrameNumber, frameDuration, m_timeScale);
+            if (FAILED(hr) && hr != E_OUTOFMEMORY)
+                throw std::runtime_error("schedule failed");
+        }
+        else
+        {
+            auto hr = m_deckLinkOutput->ScheduleVideoFrame(outputFrame, capturedFrameNumber, frameDuration, m_timeScale);
+            if (FAILED(hr) && hr != E_OUTOFMEMORY)
+                throw std::runtime_error("schedule failed");
+        }
+    }
+
+    m_outputVideoFrameIndex++;
+    if (m_outputVideoFrameIndex >= m_outputVideoFrameQueue.size())
+        m_outputVideoFrameIndex = 0;
+
+    return S_OK;
+}*/
